@@ -25,19 +25,64 @@ activities = {
         "description": "Learn strategies and compete in chess tournaments",
         "schedule": "Fridays, 3:30 PM - 5:00 PM",
         "max_participants": 12,
-        "participants": ["michael@mergington.edu", "daniel@mergington.edu"]
+        "participants": ["michael@mergington.edu", "daniel@mergington.edu"],
+        "category": "Intellectual"
     },
     "Programming Class": {
         "description": "Learn programming fundamentals and build software projects",
         "schedule": "Tuesdays and Thursdays, 3:30 PM - 4:30 PM",
         "max_participants": 20,
-        "participants": ["emma@mergington.edu", "sophia@mergington.edu"]
+        "participants": ["emma@mergington.edu", "sophia@mergington.edu"],
+        "category": "Intellectual"
     },
     "Gym Class": {
         "description": "Physical education and sports activities",
         "schedule": "Mondays, Wednesdays, Fridays, 2:00 PM - 3:00 PM",
         "max_participants": 30,
-        "participants": ["john@mergington.edu", "olivia@mergington.edu"]
+        "participants": ["john@mergington.edu", "olivia@mergington.edu"],
+        "category": "Sports"
+    },
+    "Soccer Team": {
+        "description": "Practice teamwork and compete in soccer matches",
+        "schedule": "Wednesdays, 4:00 PM - 5:30 PM",
+        "max_participants": 18,
+        "participants": ["liam@mergington.edu"],
+        "category": "Sports"
+    },
+    "Basketball Club": {
+        "description": "Develop shooting, passing, and defensive skills",
+        "schedule": "Mondays and Thursdays, 3:30 PM - 5:00 PM",
+        "max_participants": 15,
+        "participants": ["noah@mergington.edu"],
+        "category": "Sports"
+    },
+    "Drama Club": {
+        "description": "Act, perform, and explore stage productions",
+        "schedule": "Tuesdays, 3:45 PM - 5:15 PM",
+        "max_participants": 20,
+        "participants": ["ava@mergington.edu"],
+        "category": "Artistic"
+    },
+    "Art Club": {
+        "description": "Create visual art projects and experiment with different media",
+        "schedule": "Thursdays, 3:30 PM - 5:00 PM",
+        "max_participants": 16,
+        "participants": ["mia@mergington.edu"],
+        "category": "Artistic"
+    },
+    "Math Olympiad": {
+        "description": "Solve challenging math problems and compete in contests",
+        "schedule": "Fridays, 4:00 PM - 5:30 PM",
+        "max_participants": 10,
+        "participants": ["ethan@mergington.edu"],
+        "category": "Intellectual"
+    },
+    "Science Club": {
+        "description": "Explore scientific concepts through experiments and research",
+        "schedule": "Wednesdays, 3:30 PM - 5:00 PM",
+        "max_participants": 14,
+        "participants": ["isabella@mergington.edu"],
+        "category": "Intellectual"
     }
 }
 
@@ -62,6 +107,25 @@ def signup_for_activity(activity_name: str, email: str):
     # Get the specific activity
     activity = activities[activity_name]
 
+    # Validate student is not already signed up
+    if email in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Student already signed up for this activity")
+
     # Add student
     activity["participants"].append(email)
     return {"message": f"Signed up {email} for {activity_name}"}
+
+
+@app.delete("/activities/{activity_name}/unregister")
+def unregister_participant(activity_name: str, email: str):
+    """Unregister a student from an activity"""
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+
+    activity = activities[activity_name]
+
+    if email not in activity["participants"]:
+        raise HTTPException(status_code=400, detail="Student is not registered for this activity")
+
+    activity["participants"].remove(email)
+    return {"message": f"Unregistered {email} from {activity_name}"}
